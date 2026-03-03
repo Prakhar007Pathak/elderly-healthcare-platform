@@ -9,6 +9,8 @@ const errorHandler = require('./middlewares/error.middleware');
 const adminRoutes = require('./routes/admin.routes');
 const ratingRoutes = require("./routes/rating.routes");
 
+const app = express();
+
 app.use(cors({
   origin: [
     "http://localhost:5173",
