@@ -254,12 +254,24 @@ cd backend
 npm install
 ```
 
-Create .env file:
+### Backend Environment Variables
 
-```bash
+Create a `.env` file inside the `backend` directory and configure the following variables:
+
+```env
 PORT=5000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret_key
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+
+# Admin auto-seed credentials
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
+ADMIN_NAME=Admin
+
+# Cloudinary (Image Upload Service)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 Start backend server:
@@ -276,13 +288,27 @@ npm install
 npm run dev
 ```
 
+### Frontend Environment Variables
+
+Create a `.env` file inside the `frontend` directory:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
 ---
 
 ## 🌐 Live Deployment
 
-Deployment in progress.
+The project is fully deployed and accessible online.
 
-Frontend and backend will be published soon.
+| Service | URL |
+|-------|------|
+| Frontend (Vercel) | https://eldercare-delta.vercel.app |
+| Backend API (Render) | https://eldercare-kodl.onrender.com |
+
+You can explore the platform through the frontend application.  
+The backend API is connected to MongoDB Atlas and handles authentication, bookings, services, and real-time updates.
 
 ---
 

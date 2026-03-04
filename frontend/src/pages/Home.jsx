@@ -151,23 +151,32 @@ const Home = () => {
                                 whileHover={{ scale: 1.05 }}
                                 onClick={() => {
                                     if (role === "caregiver") {
-                                        navigate("/caregiver/jobs");
+                                        navigate("/caregiver/dashboard");
                                     } else {
                                         navigate("/user/dashboard");
                                     }
                                 }}
                                 className="px-9 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg transition font-semibold"
                             >
-                                {role === "caregiver" ? "View My Jobs" : "Go to Dashboard"}
+                                {role === "caregiver" ? "Go to Dashboard" : "Go to Dashboard"}
                             </motion.button>
                         )}
 
                         <motion.button
                             whileHover={{ scale: 1.05 }}
-                            onClick={() => navigate("/services")}
+                            
+                            onClick={() => {
+                                if (role === "caregiver") {
+                                    navigate("/caregiver/jobs");
+                                } else {
+                                    navigate("/services");
+                                }
+                            }}
+
                             className="px-9 py-4 border border-slate-300 bg-white/70 backdrop-blur-md rounded-xl hover:bg-white transition font-medium"
                         >
-                            Explore Services
+                            {role === "caregiver" ? "View Your Jobs" : "Explore Services"}
+
                         </motion.button>
 
                     </motion.div>
