@@ -120,16 +120,17 @@ const UserHeader = () => {
                             className="fixed inset-0 bg-black/40 z-40 md:hidden"
                         />
 
-                        {/* Floating Rounded Menu */}
+                        {/* FULL SCREEN MOBILE MENU */}
                         <motion.div
-                            initial={{ opacity: 0, y: -20, scale: 0.96 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 0.96 }}
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
                             transition={{ duration: 0.25 }}
-                            className="fixed top-20 right-1/2 -translate-x-1/2 w-[85%] max-w-sm bg-white rounded-2xl shadow-2xl z-50 p-6 md:hidden"
+                            className="fixed top-0 left-0 w-full h-screen bg-white z-50 p-6 md:hidden flex flex-col"
                         >
-                            <div className="flex justify-between items-center mb-6">
-                                <span className="font-bold text-slate-800">
+                            {/* Header */}
+                            <div className="flex justify-between items-center mb-10">
+                                <span className="font-bold text-slate-800 text-lg">
                                     Explore
                                 </span>
 
@@ -139,7 +140,8 @@ const UserHeader = () => {
                                 />
                             </div>
 
-                            <div className="space-y-5 text-slate-700 font-medium">
+                            {/* CENTERED NAV LINKS */}
+                            <div className="flex flex-col items-center flex-1 space-y-5 text-lg font-medium text-slate-700">
                                 {navItems.map((item) => (
                                     <div
                                         key={item.label}

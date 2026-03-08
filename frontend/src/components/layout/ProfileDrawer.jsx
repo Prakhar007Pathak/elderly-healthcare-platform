@@ -47,18 +47,12 @@ const ProfileDrawer = ({ open, onClose }) => {
 
 
     useEffect(() => {
-        const handleEsc = (e) => {
-            if (e.key === "Escape") onClose();
-        };
-
         if (open) {
-            document.addEventListener("keydown", handleEsc);
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
         }
-
-        return () => {
-            document.removeEventListener("keydown", handleEsc);
-        };
-    }, [open, onClose]);
+    }, [open]);
 
     return (
         <>
@@ -72,9 +66,16 @@ const ProfileDrawer = ({ open, onClose }) => {
 
             {/* Drawer */}
             <div
-                className={`fixed right-6 top-1/3 -translate-y-1/2 w-80 bg-white z-50 shadow-2xl rounded-2xl transform transition-all duration-300 ${open ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
-                    }`}
-                style={{ height: "520px" }}
+                className={`fixed right-6 top-1/3 -translate-y-1/2 w-80 bg-white z-50 shadow-2xl rounded-2xl transform transition-all duration-300
+  max-[550px]:top-0
+  max-[550px]:right-0
+  max-[550px]:translate-y-0
+  max-[550px]:w-full
+  max-[550px]:h-screen
+  max-[550px]:rounded-none
+  max-[550px]:overflow-y-auto
+  ${open ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"}
+`}
             >
 
 
