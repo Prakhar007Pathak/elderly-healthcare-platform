@@ -41,8 +41,15 @@ const ProfileDrawer = ({ open, onClose }) => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
+        localStorage.removeItem("name");
         localStorage.removeItem("onboardingDismissed");
-        navigate("/");
+
+        window.dispatchEvent(new Event("storage"));
+
+
+        onClose();
+
+        navigate("/", { replace: true });
     };
 
 

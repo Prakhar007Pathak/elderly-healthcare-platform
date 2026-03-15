@@ -3,6 +3,9 @@ const Caregiver = require('../models/Caregiver');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Patient = require('../models/Patient');
+const crypto = require("crypto");
+const sendVerificationEmail = require("../utils/sendVerificationEmail");
+const EmailVerification = require("../models/EmailVerification");
 
 
 // ================= GENERATE TOKEN =================
@@ -18,11 +21,34 @@ const generateToken = (user) => {
 // ================= REGISTER =================
 exports.register = async (req, res) => {
   try {
+
     const { name, email, password, role, phone, gender, dob } = req.body;
 
+    // Check if email was verified
+    const verification = await EmailVerification.findOne({ email });
+
+    if (!verification || !verification.verified) {
+      return res.status(400).json({
+        message: "Please verify your email before registering"
+      });
+    }
+
+    // Prevent duplicate accounts
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({
+        message: "User already exists"
+      });
+    }
+
+    // Phone validation (Indian format)
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    if (phone && !phoneRegex.test(phone)) {
+      return res.status(400).json({
+        message: "Invalid phone number format"
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,11 +61,17 @@ exports.register = async (req, res) => {
       phone,
       gender,
       dob,
-      profileCompleted: role === 'elderly' ? false : role === 'caregiver' ? false : true
+      profileCompleted:
+        role === "elderly"
+          ? false
+          : role === "caregiver"
+            ? false
+            : true
     });
 
-    // Auto-create patient (elderly)
-    if (role === 'elderly') {
+    // ================= ELDERLY =================
+    if (role === "elderly") {
+
       const age = dob
         ? Math.floor((Date.now() - new Date(dob)) / 31557600000)
         : null;
@@ -50,18 +82,24 @@ exports.register = async (req, res) => {
         age,
         gender,
         medicalConditions: [],
-        mobilityStatus: '',
-        emergencyContact: ''
+        mobilityStatus: "",
+        emergencyContact: ""
       });
+
     }
 
-    // Auto-create caregiver profile (empty)
-    if (role === 'caregiver') {
+    // ================= CAREGIVER =================
+    if (role === "caregiver") {
+
       await Caregiver.create({
         userId: user._id,
         availability: true
       });
+
     }
+
+    // Remove verification record after successful registration
+    await EmailVerification.deleteOne({ email });
 
     const token = generateToken(user);
 
@@ -76,7 +114,9 @@ exports.register = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };
 
@@ -110,6 +150,80 @@ exports.login = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+
+// ================= VERIFY EMAIL =================
+exports.verifyEmail = async (req, res) => {
+  try {
+
+    const { token } = req.params;
+
+    const record = await EmailVerification.findOne({ token });
+
+    if (!record) {
+      return res.status(400).json({
+        message: "Invalid or expired verification link"
+      });
+    }
+
+    record.verified = true;
+    await record.save();
+
+    res.redirect(`${process.env.CLIENT_URL}/verify-success`);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+// ================= SEND VERIFICATION EMAIL =================
+exports.sendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const token = crypto.randomBytes(32).toString("hex");
+
+    await EmailVerification.findOneAndUpdate(
+      { email },
+      {
+        email,
+        token,
+        verified: false
+      },
+      { upsert: true, new: true }
+    );
+
+    await sendVerificationEmail(email, token);
+
+    res.json({ message: "Verification email sent" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+// ================= CHECK EMAIL VERIFICATION =================
+exports.checkEmailVerification = async (req, res) => {
+  try {
+
+    const { email } = req.params;
+
+    const record = await EmailVerification.findOne({ email });
+
+    if (!record) {
+      return res.json({ verified: false });
+    }
+
+    res.json({
+      verified: record.verified
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

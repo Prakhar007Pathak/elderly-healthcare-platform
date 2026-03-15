@@ -10,6 +10,10 @@ function App() {
       {/* Global Toast System */}
       <Toaster
         position="top-right"
+        containerStyle={{
+          top: 85,
+          right: 20,
+        }}
         toastOptions={{
           duration: 3000,
           style: {

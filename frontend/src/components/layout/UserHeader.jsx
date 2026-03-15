@@ -8,6 +8,10 @@ const UserHeader = () => {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenu, setMobileMenu] = useState(false);
+
+    const [token, setToken] = useState(localStorage.getItem("token"));
+    const name = localStorage.getItem("name");
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,8 +23,20 @@ const UserHeader = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const token = localStorage.getItem("token");
-    const name = localStorage.getItem("name");
+    useEffect(() => {
+        const handleStorage = () => {
+            const newToken = localStorage.getItem("token");
+            setToken(newToken);
+
+            if (!newToken) {
+                setOpen(false);
+            }
+        };
+
+        window.addEventListener("storage", handleStorage);
+
+        return () => window.removeEventListener("storage", handleStorage);
+    }, []);
 
     const navItems = [
         { label: "Home", path: "/" },
@@ -34,8 +50,8 @@ const UserHeader = () => {
         <>
             <header
                 className={`sticky top-0 z-50 h-20 flex items-center justify-between px-4 md:px-10 transition-all duration-300 backdrop-blur-md ${scrolled
-                    ? "bg-white/85 shadow-[0_6px_30px_rgba(0,0,0,0.08)]"
-                    : "bg-white/70"
+                        ? "bg-white/85 shadow-[0_6px_30px_rgba(0,0,0,0.08)]"
+                        : "bg-white/70"
                     }`}
             >
                 {/* LEFT SECTION */}
@@ -111,7 +127,6 @@ const UserHeader = () => {
             <AnimatePresence>
                 {mobileMenu && (
                     <>
-                        {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -120,7 +135,6 @@ const UserHeader = () => {
                             className="fixed inset-0 bg-black/40 z-40 md:hidden"
                         />
 
-                        {/* FULL SCREEN MOBILE MENU */}
                         <motion.div
                             initial={{ x: "-100%" }}
                             animate={{ x: 0 }}
@@ -128,7 +142,6 @@ const UserHeader = () => {
                             transition={{ duration: 0.25 }}
                             className="fixed top-0 left-0 w-full h-screen bg-white z-50 p-6 md:hidden flex flex-col"
                         >
-                            {/* Header */}
                             <div className="flex justify-between items-center mb-10">
                                 <span className="font-bold text-slate-800 text-lg">
                                     Explore
@@ -140,7 +153,6 @@ const UserHeader = () => {
                                 />
                             </div>
 
-                            {/* CENTERED NAV LINKS */}
                             <div className="flex flex-col items-center flex-1 space-y-5 text-lg font-medium text-slate-700">
                                 {navItems.map((item) => (
                                     <div
