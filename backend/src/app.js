@@ -8,6 +8,8 @@ const serviceRoutes = require('./routes/service.routes');
 const errorHandler = require('./middlewares/error.middleware');
 const adminRoutes = require('./routes/admin.routes');
 const ratingRoutes = require("./routes/rating.routes");
+const careNoteRoutes = require("./routes/careNote.routes");
+
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.use(errorHandler);
 app.use('/api/admin', adminRoutes);
 app.use('/api/caregivers', caregiverRoutes);
 app.use("/api/ratings", ratingRoutes);
+app.use("/api/care-notes", careNoteRoutes);
 
 app.get('/', (req, res) => {
   res.send('Elderly Healthcare API is running');

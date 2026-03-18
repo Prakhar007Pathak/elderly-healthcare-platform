@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 import ErrorBox from "../../components/ui/ErrorBox";
+import { connectSocket } from "../../services/socket";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -41,6 +42,9 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("name", data.user.name);
+      localStorage.setItem("userId", data.user.id);
+
+      connectSocket();
 
       toast.success("Welcome back 👋");
 

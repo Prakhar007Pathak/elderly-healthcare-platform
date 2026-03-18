@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const Booking = require('../models/Booking');
 const Patient = require('../models/Patient');
 const Service = require('../models/Service');
@@ -10,6 +11,14 @@ exports.createBooking = async (req, res) => {
 
     if (!patientId || !serviceId || !startDate || !hoursPerDay || !durationDays) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user || !user.profileCompleted) {
+      return res.status(400).json({
+        message: "Please complete your profile before booking a service"
+      });
     }
 
     const today = new Date();
@@ -35,13 +44,15 @@ exports.createBooking = async (req, res) => {
     }
 
     const service = await Service.findById(serviceId)
-      .populate("caregiverId");
+      .populate({
+        path: "caregiverId",
+        populate: { path: "userId" }
+      });
 
     if (!service) {
       return res.status(404).json({ message: 'Service not found' });
     }
 
-    // calculate end date
     const endDate = new Date(start);
     endDate.setDate(endDate.getDate() + durationDays);
 
@@ -62,7 +73,15 @@ exports.createBooking = async (req, res) => {
       status: 'requested'
     });
 
-    global.io.emit("new-booking", booking);
+    if (global.io) {
+      global.io.to(service.caregiverId.userId._id.toString()).emit("notification", {
+        type: "new-booking",
+        message: "New booking request received",
+        booking
+      });
+    }
+
+    global.io.emit("booking-updated", booking);
 
     res.status(201).json({
       message: 'Booking created successfully',
@@ -132,6 +151,7 @@ exports.getPendingBookings = async (req, res) => {
 // ---------------- ACCEPT BOOKING ----------------
 exports.acceptBooking = async (req, res) => {
   try {
+
     const booking = await Booking.findById(req.params.id);
 
     if (!booking) {
@@ -162,11 +182,19 @@ exports.acceptBooking = async (req, res) => {
       });
     }
 
-    // 🔥 FIX HERE
-    booking.caregiverId = caregiver._id;  // NOT req.user.id
+    booking.caregiverId = caregiver._id;
     booking.status = 'accepted';
 
     await booking.save();
+
+    // 🔔 NOTIFY USER
+    if (global.io) {
+      global.io.to(booking.userId.toString()).emit("notification", {
+        type: "booking-accepted",
+        message: "Your booking has been accepted",
+        booking
+      });
+    }
 
     global.io.emit("booking-updated", booking);
 
@@ -184,6 +212,7 @@ exports.acceptBooking = async (req, res) => {
 // ---------------- UPDATE STATUS ----------------
 exports.updateBookingStatus = async (req, res) => {
   try {
+
     const { status } = req.body;
 
     const booking = await Booking.findById(req.params.id);
@@ -221,6 +250,26 @@ exports.updateBookingStatus = async (req, res) => {
 
     booking.status = status;
     await booking.save();
+
+    // 🔔 NOTIFY USER ABOUT STATUS CHANGE
+    if (global.io) {
+
+      if (status === "ongoing") {
+        global.io.to(booking.userId.toString()).emit("notification", {
+          type: "job-started",
+          message: "Caregiver started your service",
+          booking
+        });
+      }
+
+      if (status === "completed") {
+        global.io.to(booking.userId.toString()).emit("notification", {
+          type: "job-completed",
+          message: "Service completed. You can now rate the caregiver.",
+          booking
+        });
+      }
+    }
 
     global.io.emit("booking-updated", booking);
 

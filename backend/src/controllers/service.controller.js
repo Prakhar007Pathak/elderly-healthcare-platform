@@ -38,9 +38,14 @@ exports.createService = async (req, res) => {
 // ================= GET ALL SERVICES (Marketplace) =================
 exports.getAllServices = async (req, res) => {
   try {
+
     const services = await Service.find({ isActive: true })
       .populate({
         path: "caregiverId",
+        match: {
+          availability: true,
+          verificationStatus: "verified"
+        },
         populate: {
           path: "userId",
           select: "name"
@@ -49,7 +54,12 @@ exports.getAllServices = async (req, res) => {
       .select("-__v")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(services);
+    // remove services where caregiver didn't match filter
+    const filteredServices = services.filter(
+      service => service.caregiverId !== null
+    );
+
+    res.status(200).json(filteredServices);
 
   } catch (error) {
     res.status(500).json({ message: error.message });

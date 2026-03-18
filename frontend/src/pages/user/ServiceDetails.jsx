@@ -4,7 +4,6 @@ import UserCareLayout from "../../components/layout/UserCareLayout";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 
-
 const ServiceDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -12,6 +11,9 @@ const ServiceDetails = () => {
     const [service, setService] = useState(null);
     const [hours, setHours] = useState(1);
     const [durationDays, setDurationDays] = useState(7);
+
+    // ✅ NEW STATE
+    const [profileCompleted, setProfileCompleted] = useState(true);
 
     useEffect(() => {
         const fetchService = async () => {
@@ -24,7 +26,16 @@ const ServiceDetails = () => {
             }
         };
 
+        // ✅ NEW: CHECK PROFILE STATUS
+        const checkProfile = async () => {
+            try {
+                const { data } = await API.get("/auth/me");
+                setProfileCompleted(data.profileCompleted);
+            } catch (err) { }
+        };
+
         fetchService();
+        checkProfile();
     }, [id]);
 
     if (!service) return null;
@@ -157,6 +168,12 @@ const ServiceDetails = () => {
                                 return;
                             }
 
+                            // ✅ BLOCK IF PROFILE NOT COMPLETE
+                            if (!profileCompleted) {
+                                toast.error("Complete your profile before booking");
+                                return;
+                            }
+
                             navigate("/user/book", {
                                 state: {
                                     service,
@@ -166,7 +183,12 @@ const ServiceDetails = () => {
                                 }
                             });
                         }}
-                        className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium"
+                        disabled={!profileCompleted}
+                        className={`w-full py-3 rounded-xl transition font-medium 
+                        ${!profileCompleted
+                                ? "bg-gray-400 cursor-not-allowed text-white"
+                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                            }`}
                     >
                         Proceed to Booking
                     </button>

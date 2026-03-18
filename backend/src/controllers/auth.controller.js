@@ -289,16 +289,18 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // -------- Update common fields --------
     user.name = name ?? user.name;
     user.phone = phone ?? user.phone;
     user.gender = gender ?? user.gender;
     user.dob = dob ?? user.dob;
     user.address = address ?? user.address;
 
+    user.profileCompleted = false;
+
     // ================= ELDERLY =================
     if (user.role === "elderly") {
-      const patient = await Patient.findOne({ userId: user._id });
+
+      let patient = await Patient.findOne({ userId: user._id });
 
       if (patient) {
         patient.medicalConditions = medicalConditions || [];
@@ -307,20 +309,50 @@ exports.updateProfile = async (req, res) => {
         await patient.save();
       }
 
-      // Mark completed if required fields exist
-      if (user.address && patient?.mobilityStatus && patient?.emergencyContact) {
+      if (
+        user.address &&
+        patient?.mobilityStatus &&
+        patient?.emergencyContact
+      ) {
+        user.profileCompleted = true;
+      }
+    }
+
+    // ================= FAMILY =================
+    if (user.role === "family") {
+
+      const patients = await Patient.find({ userId: user._id });
+
+      if (patients.length > 0) {
         user.profileCompleted = true;
       }
     }
 
     // ================= CAREGIVER =================
     if (user.role === "caregiver") {
+
+      const Booking = require("../models/Booking");
+
       let caregiver = await Caregiver.findOne({ userId: user._id });
 
       if (!caregiver) {
         caregiver = await Caregiver.create({
           userId: user._id
         });
+      }
+
+      if (availability === false) {
+
+        const activeJob = await Booking.findOne({
+          caregiverId: caregiver._id,
+          status: { $in: ["accepted", "ongoing"] }
+        });
+
+        if (activeJob) {
+          return res.status(400).json({
+            message: "You cannot mark yourself unavailable while a job is active"
+          });
+        }
       }
 
       caregiver.qualification = qualification ?? caregiver.qualification;

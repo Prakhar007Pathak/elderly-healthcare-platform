@@ -5,10 +5,10 @@ import API from "../../services/api";
 import Skeleton from "../../components/ui/Skeleton";
 import toast from "react-hot-toast";
 
-
 const Services = () => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,8 +27,20 @@ const Services = () => {
         fetchServices();
     }, []);
 
+    const filteredServices = services.filter((service) => {
+        const serviceName = service.name?.toLowerCase() || "";
+        const caregiverName =
+            service.caregiverId?.userId?.name?.toLowerCase() || "";
+
+        return (
+            serviceName.includes(search.toLowerCase()) ||
+            caregiverName.includes(search.toLowerCase())
+        );
+    });
+
     return (
         <UserCareLayout>
+
             {/* Header */}
             <div className="mb-10">
                 <h1 className="text-3xl font-bold text-slate-800">
@@ -37,23 +49,32 @@ const Services = () => {
                 <p className="text-slate-500 mt-2">
                     Professional care services offered by verified caregivers
                 </p>
+
+                {/* SEARCH BAR */}
+                <div className="mt-6 max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Search service or caregiver..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
             </div>
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-                {/* CONDITIONAL RENDERING */}
                 {loading ? (
-                    // Show 6 skeleton cards while loading
                     [...Array(6)].map((_, i) => (
                         <Skeleton key={i} className="h-[350px] w-full rounded-2xl" />
                     ))
-                ) : services.length === 0 ? (
+                ) : filteredServices.length === 0 ? (
                     <p className="text-slate-500">
-                        No services available.
+                        No services found.
                     </p>
                 ) : (
-                    services.map((service) => (
+                    filteredServices.map((service) => (
                         <div
                             key={service._id}
                             onClick={() => navigate(`/services/${service._id}`)}

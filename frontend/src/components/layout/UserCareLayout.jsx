@@ -4,6 +4,7 @@ import UserHeader from "./UserHeader";
 import Footer from "./Footer";
 import API from "../../services/api";
 import toast from "react-hot-toast";
+import socket, { connectSocket } from "../../services/socket";
 
 
 const UserCareLayout = ({ children }) => {
@@ -12,6 +13,27 @@ const UserCareLayout = ({ children }) => {
 
   const [showBanner, setShowBanner] = useState(false);
   const [bannerType, setBannerType] = useState(null);
+
+  useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    // Only connect socket if user is logged in
+    if (token) {
+      connectSocket();
+
+      socket.on("notification", (data) => {
+        toast(data.message);
+      });
+    }
+
+    return () => {
+      socket.off("notification");
+    };
+
+  }, []);
+
+
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -80,6 +102,8 @@ const UserCareLayout = ({ children }) => {
     checkOnboarding();
   }, [location.pathname]);
 
+
+
   const handleAction = () => {
     navigate("/user/profile");
     setShowBanner(false);
@@ -89,6 +113,8 @@ const UserCareLayout = ({ children }) => {
     localStorage.setItem("onboardingDismissed", "true");
     setShowBanner(false);
   };
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
