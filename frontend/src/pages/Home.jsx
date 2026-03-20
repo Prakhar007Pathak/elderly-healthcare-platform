@@ -55,37 +55,36 @@ const Counter = ({ end, suffix = "" }) => {
     return <div ref={ref}>{count}{suffix}</div>;
 };
 
-const testimonials = [
-    {
-        name: "Anita Sharma",
-        text: "ElderCare gave us peace of mind. The caregiver was professional and compassionate. Truly life-changing service.",
-    },
-    {
-        name: "Rahul Mehta",
-        text: "The booking process was seamless and transparent. My father received excellent physiotherapy support at home.",
-    },
-    {
-        name: "Priya Kapoor",
-        text: "Reliable, trustworthy and highly professional. I would recommend ElderCare to every family.",
-    },
-];
 
 const Home = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-    const [current, setCurrent] = useState(0);
 
     const { scrollY } = useScroll();
     const blobY1 = useTransform(scrollY, [0, 600], [0, -100]);
     const blobY2 = useTransform(scrollY, [0, 600], [0, 100]);
 
+    const [stats, setStats] = useState({
+        caregivers: 0,
+        families: 0,
+        rating: 0
+    });
+
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrent((prev) => (prev + 1) % testimonials.length);
-        }, 5000);
-        return () => clearInterval(interval);
+        const fetchStats = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/stats");
+                const data = await res.json();
+                setStats(data);
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        };
+
+        fetchStats();
     }, []);
+
 
     return (
         <UserCareLayout>
@@ -117,7 +116,7 @@ const Home = () => {
                         Trusted Elderly Care,
                         <br />
                         <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Powered by Compassion & Technology
+                            Right at Your Home
                         </span>
                     </motion.h1>
 
@@ -127,8 +126,8 @@ const Home = () => {
                         transition={{ delay: 0.2, duration: 0.8 }}
                         className="mt-5 text-slate-600 max-w-2xl mx-auto relative z-10 text-lg"
                     >
-                        Premium in-home healthcare services delivered by verified professionals,
-                        ensuring safety, trust and peace of mind.
+                        Professional in-home healthcare services delivered by verified caregivers,
+                        ensuring safety, comfort, and peace of mind for your family.
                     </motion.p>
 
                     <motion.div
@@ -164,7 +163,7 @@ const Home = () => {
 
                         <motion.button
                             whileHover={{ scale: 1.05 }}
-                            
+
                             onClick={() => {
                                 if (role === "caregiver") {
                                     navigate("/caregiver/jobs");
@@ -182,43 +181,59 @@ const Home = () => {
                     </motion.div>
                 </section>
 
+
                 {/* SERVICES */}
                 <AnimatedSection>
-                    <section className="py-20">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold">
-                                Our Care Services
-                            </h2>
-                            <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-                                Personalized healthcare solutions delivered to your home.
-                            </p>
+
+                    <div className="text-center mb-3 py-20">
+                        <h2 className="text-3xl md:text-4xl font-bold">
+                            Our Care Services
+                        </h2>
+                        <p className="text-slate-500 mt-3 max-w-xl mx-auto">
+                            Personalized healthcare solutions delivered to your home.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                        {/* Featured Service */}
+                        <div className="md:col-span-2 bg-white border border-slate-200 p-10 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all group">
+                            <span className="text-4xl">🩺</span>
+                            <h3 className="text-2xl font-bold mt-6 text-slate-800 group-hover:text-blue-600 transition-colors">Professional Nursing Care</h3>
+                            <p className="text-slate-500 mt-4 text-lg">Post-surgery care, chronic illness management, and medical support in the comfort of your home.</p>
+                            <div className="mt-8 h-1 w-20 bg-blue-600 rounded-full group-hover:w-full transition-all duration-500" />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {[
-                                { title: "Nursing Care", desc: "Professional in-home nursing services.", icon: "🩺" },
-                                { title: "Elderly Assistance", desc: "Compassionate daily support.", icon: "🤝" },
-                                { title: "Physiotherapy", desc: "Personalized therapy sessions.", icon: "💪" },
-                            ].map((service, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ y: -8 }}
-                                    className="relative bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-xl transition"
-                                >
-                                    <div className="w-12 h-12 flex items-center justify-center text-xl rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white mb-5">
-                                        {service.icon}
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-slate-800">
-                                        {service.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-500 mt-3 leading-relaxed">
-                                        {service.desc}
-                                    </p>
-                                </motion.div>
-                            ))}
+                        {/* Secondary Services */}
+                        <div className="bg-blue-600 p-10 rounded-[2.5rem] text-white flex flex-col justify-between shadow-xl shadow-blue-600/20">
+                            <div>
+                                <span className="text-4xl">🤝</span>
+                                <h3 className="text-2xl font-bold mt-6">Companion Care</h3>
+                                <p className="text-blue-100 mt-2">Emotional support, companionship, and daily assistance for a better quality of life.</p>
+                            </div>
                         </div>
-                    </section>
+
+                        <div className="bg-slate-100 p-10 rounded-[2.5rem] border border-slate-200 hover:bg-white transition-colors">
+                            <span className="text-4xl">💪</span>
+                            <h3 className="text-xl font-bold mt-6 text-slate-800">Physiotherapy</h3>
+                            <p className="text-slate-500 mt-2">Expert-led recovery sessions scheduled at your home.</p>
+                        </div>
+
+                        <div className="md:col-span-2 bg-gradient-to-r from-indigo-50 to-blue-50 p-10 rounded-[2.5rem] border border-blue-100 flex flex-col md:flex-row items-center gap-8">
+                            <div className="text-center md:text-left">
+                                <h3 className="text-xl font-bold text-slate-800">Trusted & Verified Care</h3>
+                                <p className="text-slate-600 mt-2 text-sm">Every caregiver is background-verified and medically trained.</p>
+                            </div>
+                            <div className="flex -space-x-4">
+                                {/* Aesthetic User Avatars */}
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-slate-300 overflow-hidden shadow-sm" />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </AnimatedSection>
+
 
                 {/* STATS */}
                 <AnimatedSection>
@@ -234,9 +249,9 @@ const Home = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {[
-                                { value: 500, suffix: "+", label: "Verified Caregivers" },
-                                { value: 1200, suffix: "+", label: "Families Served" },
-                                { value: 98, suffix: "%", label: "Satisfaction Rate" },
+                                { value: stats.caregivers, suffix: "+", label: "Active Care Professionals" },
+                                { value: stats.families, suffix: "+", label: "Happy Families" },
+                                { value: stats.rating.toFixed(1), suffix: "⭐", label: "Average Rating" },
                             ].map((stat, index) => (
                                 <motion.div
                                     key={index}
@@ -255,49 +270,115 @@ const Home = () => {
                     </section>
                 </AnimatedSection>
 
-                {/* TESTIMONIALS */}
+
+                {/* CARE ECOSYSTEM*/}
                 <AnimatedSection>
-                    <section className="py-24">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl font-bold text-slate-800">
-                                What Families Say
+                    <div className="relative">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-5xl font-bold text-slate-800 tracking-tight">
+                                How we bridge the <span className="text-blue-600">Care Gap</span>
                             </h2>
-                            <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-                                Real stories from trusted families.
+                            <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-lg">
+                                A structured approach to ensure your loved ones are never alone,
+                                combining clinical excellence with family connectivity.
                             </p>
                         </div>
 
-                        <div className="max-w-3xl mx-auto">
-                            <motion.div
-                                key={current}
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6 }}
-                                className="bg-white p-10 rounded-2xl shadow-md border"
-                            >
-                                <p className="text-slate-600 text-lg italic">
-                                    "{testimonials[current].text}"
-                                </p>
-                                <h4 className="mt-6 font-semibold text-blue-600">
-                                    — {testimonials[current].name}
-                                </h4>
-                            </motion.div>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
 
-                            <div className="flex justify-center mt-6 gap-2">
-                                {testimonials.map((_, index) => (
-                                    <div
-                                        key={index}
-                                        onClick={() => setCurrent(index)}
-                                        className={`w-3 h-3 rounded-full cursor-pointer transition ${current === index
-                                            ? "bg-blue-600"
-                                            : "bg-slate-300"
-                                            }`}
-                                    />
-                                ))}
+                            <div className="lg:col-span-7 bg-white rounded-[3rem] p-8 md:p-12 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between overflow-hidden relative group">
+                                <div className="relative z-10">
+                                    <div className="flex gap-3 mb-8">
+                                        {['Safety', 'Comfort', 'Quality'].map((tag) => (
+                                            <span key={tag} className="px-4 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full uppercase tracking-widest">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <h3 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+                                        Real-time Updates <br /> & Compassionate Support
+                                    </h3>
+                                    <p className="text-slate-500 mt-6 text-lg max-w-md leading-relaxed">
+                                        Our platform doesn't just book a visit; it creates a 24/7 safety net.
+                                        Stay informed with real-time updates on care activities,
+                                        ensuring transparency and peace of mind for families.
+                                    </p>
+                                </div>
+
+                                <div className="mt-12 flex items-end justify-between relative z-10">
+                                    <button
+                                        onClick={() => navigate("/services")}
+                                        className="group/btn flex items-center gap-3 text-blue-600 font-bold text-lg"
+                                    >
+                                        Explore Services
+                                        <span className="group-hover/btn:translate-x-2 transition-transform">→</span>
+                                    </button>
+
+                                    <div className="hidden md:flex gap-2 items-end">
+                                        {[40, 70, 45, 90, 65, 80].map((h, i) => (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ height: 0 }}
+                                                animate={{ height: h }}
+                                                transition={{ duration: 1, delay: i * 0.1, repeat: Infinity, repeatType: 'reverse' }}
+                                                className="w-3 bg-blue-600/20 rounded-full"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-blue-100 transition-colors" />
+                            </div>
+
+                            <div className="lg:col-span-5 flex flex-col gap-6">
+
+                                <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white hover:scale-[1.02] transition-transform cursor-pointer shadow-lg overflow-hidden relative">
+                                    <div className="relative z-10">
+                                        <h4 className="text-xl font-bold">CareNote Tracking</h4>
+                                        <p className="text-slate-400 mt-2 text-sm"> Maintain detailed care logs, daily updates, and observations so families stay connected with every step of care.</p>
+                                        <div className="flex -space-x-3 mt-6">
+                                            {[1, 2, 3].map((i) => (
+                                                <div key={i} className="w-10 h-10 rounded-full border-2 border-slate-900 bg-slate-700 flex items-center justify-center text-[10px] font-bold">
+                                                    {i === 3 ? '+Notes' : 'Note'}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-0 right-0 p-4 opacity-20 text-6xl font-black">01</div>
+                                </div>
+
+                                <div className="bg-blue-600 rounded-[2.5rem] p-8 text-white hover:scale-[1.02] transition-transform cursor-pointer shadow-lg overflow-hidden relative">
+                                    <div className="relative z-10">
+                                        <h4 className="text-xl font-bold">Family Transparency</h4>
+                                        <p className="text-blue-100 mt-2 text-sm">Track care updates, schedules, and service details through a dedicated dashboard.</p>
+                                        <div className="mt-6 h-2 w-full bg-white/20 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                whileInView={{ width: '75%' }}
+                                                className="h-full bg-white"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-0 right-0 p-4 opacity-20 text-6xl font-black">02</div>
+                                </div>
+
+                                <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 text-slate-800 hover:scale-[1.02] transition-transform cursor-pointer shadow-sm overflow-hidden relative">
+                                    <div className="relative z-10">
+                                        <h4 className="text-xl font-bold">Rapid Response</h4>
+                                        <p className="text-slate-500 mt-2 text-sm">Emergency assistance is just one tap away from your family and elders.</p>
+                                        <div className="mt-4 flex items-center gap-2 text-red-500 font-bold text-xs uppercase">
+                                            <span className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                                            Active Monitoring
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 text-6xl font-black text-slate-900">03</div>
+                                </div>
+
                             </div>
                         </div>
-                    </section>
+                    </div>
                 </AnimatedSection>
+
 
                 {/* CTA */}
                 <AnimatedSection>
@@ -335,7 +416,7 @@ const Home = () => {
                                         whileHover={{ scale: 1.05 }}
                                         className="px-9 py-3 border border-slate-600 hover:border-blue-400 hover:text-blue-400 rounded-xl font-medium text-slate-300 transition"
                                     >
-                                        Talk to an Expert
+                                        Contact Us
                                     </motion.button>
                                 </div>
                             </div>

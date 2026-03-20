@@ -4,6 +4,11 @@ import PrivateRoute from "./PrivateRoute";
 import RoleRoute from "./RoleRoute";
 
 import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import Blogs from "../pages/Blogs";
+
+
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
@@ -27,6 +32,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminCaregivers from "../pages/admin/AdminCaregivers";
 import AdminBookings from "../pages/admin/AdminBookings";
 import AdminUsers from "../pages/admin/AdminUsers";
+import AdminContacts from "../pages/admin/AdminContacts";
 
 
 import Unauthorized from "../pages/Unauthorized";
@@ -38,6 +44,9 @@ const AppRoutes = () => {
 
       {/* PUBLIC ROUTES */}
       <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/blogs" element={<Blogs />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
@@ -243,6 +252,17 @@ const AppRoutes = () => {
           <PrivateRoute>
             <RoleRoute allowedRoles={["admin"]}>
               <AdminUsers />
+            </RoleRoute>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin/contacts"
+        element={
+          <PrivateRoute>
+            <RoleRoute allowedRoles={["admin"]}>
+              <AdminContacts />
             </RoleRoute>
           </PrivateRoute>
         }

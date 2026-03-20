@@ -17,7 +17,8 @@ const menus = {
     { label: "Dashboard", path: "/admin/dashboard" },
     { label: "Bookings", path: "/admin/bookings" },
     { label: "Caregivers", path: "/admin/caregivers" },
-    { label: "Users", path: "/admin/users" }
+    { label: "Users", path: "/admin/users" },
+    { label: "Contacts", path: "/admin/contacts" }
   ]
 };
 
