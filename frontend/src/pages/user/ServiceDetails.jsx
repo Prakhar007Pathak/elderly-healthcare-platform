@@ -12,7 +12,6 @@ const ServiceDetails = () => {
     const [hours, setHours] = useState(1);
     const [durationDays, setDurationDays] = useState(7);
 
-    // ✅ NEW STATE
     const [profileCompleted, setProfileCompleted] = useState(true);
 
     useEffect(() => {
@@ -26,7 +25,6 @@ const ServiceDetails = () => {
             }
         };
 
-        // ✅ NEW: CHECK PROFILE STATUS
         const checkProfile = async () => {
             try {
                 const { data } = await API.get("/auth/me");
@@ -168,7 +166,7 @@ const ServiceDetails = () => {
                                 return;
                             }
 
-                            // ✅ BLOCK IF PROFILE NOT COMPLETE
+                            //  BLOCK IF PROFILE NOT COMPLETE
                             if (!profileCompleted) {
                                 toast.error("Complete your profile before booking");
                                 return;
