@@ -414,6 +414,7 @@ const Home = () => {
 
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}
+                                        onClick={() => navigate("/contacts")}
                                         className="px-9 py-3 border border-slate-600 hover:border-blue-400 hover:text-blue-400 rounded-xl font-medium text-slate-300 transition"
                                     >
                                         Contact Us
