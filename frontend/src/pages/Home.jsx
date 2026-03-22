@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import UserCareLayout from "../components/layout/UserCareLayout";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 /* Scroll Reveal Wrapper */
 const AnimatedSection = ({ children }) => {
@@ -74,9 +75,8 @@ const Home = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/stats");
-                const data = await res.json();
-                setStats(data);
+                const res = await API.get("/stats");
+                setStats(res.data);
             } catch (error) {
                 console.error("Error fetching stats:", error);
             }

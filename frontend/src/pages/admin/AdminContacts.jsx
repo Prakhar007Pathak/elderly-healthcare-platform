@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import API from "../../services/api";
 
 const AdminContacts = () => {
     const [contacts, setContacts] = useState([]);
@@ -8,9 +9,8 @@ const AdminContacts = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/contact");
-                const data = await res.json();
-                setContacts(data);
+                const res = await API.get("/contact");
+                setContacts(res.data);
             } catch (error) {
                 console.error("Error fetching contacts:", error);
             }

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import UserCareLayout from "../components/layout/UserCareLayout";
+import API from "../services/api";
+
 
 const Contact = () => {
     const [form, setForm] = useState({
@@ -24,22 +26,13 @@ const Contact = () => {
         setError("");
 
         try {
-            const res = await fetch("http://localhost:5000/api/contact", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(form)
-            });
-
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message);
+            const res = await API.post("/contact", form);
 
             setSuccess("Message sent successfully!");
             setForm({ name: "", email: "", message: "" });
 
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || "Something went wrong");
         } finally {
             setLoading(false);
         }
