@@ -8,6 +8,8 @@ import { useInView } from "react-intersection-observer";
 import UserCareLayout from "../components/layout/UserCareLayout";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import toast from "react-hot-toast";
+
 
 /* Scroll Reveal Wrapper */
 const AnimatedSection = ({ children }) => {
@@ -78,7 +80,7 @@ const Home = () => {
                 const res = await API.get("/stats");
                 setStats(res.data);
             } catch (error) {
-                console.error("Error fetching stats:", error);
+                toast.error("Error fetching stats:", error);
             }
         };
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import API from "../../services/api";
+import toast from "react-hot-toast";
+
 
 const AdminContacts = () => {
     const [contacts, setContacts] = useState([]);
@@ -12,7 +14,7 @@ const AdminContacts = () => {
                 const res = await API.get("/contact");
                 setContacts(res.data);
             } catch (error) {
-                console.error("Error fetching contacts:", error);
+                toast.error("Error fetching contacts:", error);
             }
         };
 
