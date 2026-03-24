@@ -1,36 +1,38 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendVerificationEmail = async (email, token) => {
-    try {
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is missing");
+    }
 
-        const verificationLink = `${process.env.API_URL}/api/auth/verify-email/${token}`;
-        
-        await transporter.sendMail({
-            from: `"ElderCare Support" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: "Verify your email address",
-            html: `
+    const verificationLink = `${process.env.API_URL}/api/auth/verify-email/${token}`;
+
+    const response = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: email,
+      subject: "Verify your email address",
+      html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2>Welcome to ElderCare</h2>
-          <p>Thank you for registering. Please verify your email to activate your account.</p>
           
+          <p>
+            Thank you for registering. Please verify your email to activate your account.
+          </p>
+
           <a 
             href="${verificationLink}" 
             style="
               display:inline-block;
-              padding:10px 20px;
+              padding:12px 24px;
               background:#2563eb;
               color:white;
               text-decoration:none;
               border-radius:6px;
-              margin-top:10px;
+              margin-top:12px;
+              font-weight:bold;
             "
           >
             Verify Email
@@ -41,11 +43,19 @@ const sendVerificationEmail = async (email, token) => {
           </p>
         </div>
       `
-        });
+    });
 
-    } catch (error) {
-        console.error("Email sending failed:", error);
+    console.log("Email sent via Resend:", response);
+
+    if (response.error) {
+      console.error("Resend API error:", response.error);
+      throw new Error(response.error.message);
     }
+
+  } catch (error) {
+    console.error("Email sending failed:", error.message);
+    throw new Error("Failed to send verification email");
+  }
 };
 
 module.exports = sendVerificationEmail;
