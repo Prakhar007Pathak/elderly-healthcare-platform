@@ -9,7 +9,7 @@ const sendVerificationEmail = async (email, token) => {
       {
         sender: {
           name: "ElderCare",
-          email: "prakharpathak200@gmail.com" // must be verified
+          email: "prakharpathak200@gmail.com"
         },
         to: [
           {
