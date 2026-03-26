@@ -56,7 +56,7 @@ const Contact = () => {
                             How can we <span className="text-slate-300 italic">help?</span>
                         </h1>
                         <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto font-medium">
-                            Whether you're looking for care or have a technical question, our team is ready to assist you.
+                            Whether you need care assistance, technical support, feedback, or wish to report a concern, our team is here to help you every step of the way.
                         </p>
                     </motion.div>
                 </section>
