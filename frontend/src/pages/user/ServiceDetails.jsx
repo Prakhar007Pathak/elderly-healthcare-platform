@@ -99,7 +99,7 @@ const ServiceDetails = () => {
                 <div className="bg-white rounded-2xl shadow-lg p-6 h-fit">
 
                     <h3 className="text-xl font-semibold mb-6">
-                        Configure Your Plan
+                        Schedule Your Care
                     </h3>
 
                     {/* Hours */}
