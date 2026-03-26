@@ -43,6 +43,15 @@ Developed as part of an internship project and built to production-style standar
 
 ---
 
+### 📧 Email Verification System
+
+* Secure email verification before registration
+* Token-based verification with expiration handling
+* Prevents unverified account creation
+* Integrated with transactional email service (Brevo)
+
+---
+
 ### 👨‍👩‍👧 User & Patient Management
 
 * Create and manage patient profiles
@@ -76,7 +85,8 @@ Developed as part of an internship project and built to production-style standar
 
 ### 📅 Booking Engine
 
-* Hourly / multi-day / long-term booking support
+* Flexible care scheduling (start date, duration, hours per day)
+* Supports short-term and long-term care planning
 * Service status tracking:
   + Requested
   + Accepted
@@ -87,10 +97,27 @@ Developed as part of an internship project and built to production-style standar
 
 ---
 
+### 📝 Care Notes System
+
+* Caregivers can log visit-level care updates
+* Tracks patient condition, observations, and notes
+* Provides transparency to families
+* Enhances continuity of care
+
+---
+
 ### ⭐ Rating System
 
 * Post-service caregiver rating
 * Average rating calculation & display
+
+---
+
+### 📩 Contact & Support System
+
+* Users can submit queries, feedback, or complaints
+* Admin panel to view and manage submitted messages
+* Acts as a basic complaint handling mechanism
 
 ---
 
@@ -99,7 +126,7 @@ Developed as part of an internship project and built to production-style standar
 * Active bookings
 * Completed services
 * Pending requests
-* Basic analytics summary
+* Basic analytics summary (bookings, caregivers, satisfaction rate)
 
 ---
 
@@ -142,14 +169,15 @@ Developed as part of an internship project and built to production-style standar
 ## 🔄 System Workflow
 
 1. User registers or logs in  
-2. Creates patient profile  
-3. Browses healthcare services  
-4. Configures schedule & duration  
-5. Sends booking request  
-6. Caregiver accepts request  
-7. Service progresses through defined stages  
-8. User receives real-time updates  
-9. Service completion & rating submission  
+2. Verifies email before account activation  
+3. Creates patient profile  
+4. Browses healthcare services  
+5. Configures schedule & duration  
+6. Sends booking request  
+7. Caregiver accepts request  
+8. Service progresses through defined stages  
+9. User receives real-time updates  
+10. Service completion & rating submission  
 
 ---
 
@@ -157,12 +185,15 @@ Developed as part of an internship project and built to production-style standar
 
 * Authentication System  
 * Role-Based Access Control  
+* Email Verification System  
 * Patient Management  
 * Caregiver Management  
 * Service Marketplace  
 * Booking Engine  
+* Carenote System
 * Real-Time Status Updates  
-* Rating System  
+* Rating System 
+* Contact & Support Module  
 * Responsive UI (Mobile-Friendly)
 
 ---
@@ -188,6 +219,8 @@ Socket.io (Real-Time Updates)
 * Caregivers  
 * Services  
 * Bookings  
+* EmailVerification  
+* CareNotes  
 * Ratings  
 
 ---
@@ -210,6 +243,7 @@ Socket.io (Real-Time Updates)
 * JWT Authentication
 * REST APIs
 * Socket.io
+* Brevo (Transactional Email API)
 
 ---
 
@@ -217,6 +251,7 @@ Socket.io (Real-Time Updates)
 
 * JWT-based authentication
 * Role-based route protection
+* Email verification before account creation
 * Booking ownership validation
 * Caregiver authorization checks
 * Protected API endpoints
@@ -227,10 +262,7 @@ Socket.io (Real-Time Updates)
 
 The following modules are identified for future expansion:
 
-* 📝 Care Notes System (visit-level documentation)
-* 🛑 Complaint & Dispute Management System
 * 💳 Online Payment Integration
-* 📊 Advanced Admin Monitoring
 * 🌍 Multi-City Scalability Support
 * 📱 Native Mobile Application
 * 🆘 Emergency SOS Module
@@ -272,6 +304,13 @@ ADMIN_NAME=Admin
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+# Brevo (Email Verification Service)
+BREVO_API_KEY=your_api_key
+
+API_URL=http://localhost:5000
+CLIENT_URL=http://localhost:5173
+
 ```
 
 Start backend server:
